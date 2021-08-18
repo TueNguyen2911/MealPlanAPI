@@ -77,6 +77,11 @@ app.get("/api/macro", passport.authenticate('jwt', {session: false}), (req, res)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
+app.delete("/api/deletePost", passport.authenticate('jwt', {session: false}), (req, res) => {
+    dataService.deletePost(req.get('UserId'), req.body)
+    .then((data) => res.json(data))
+    .catch((err) => res.json(err));
+})
 app.post("/api/sign-up", (req, res) => {
     console.log('hits')
     userService.registerUser(req.body)

@@ -157,3 +157,12 @@ module.exports.getMacroByUserId = function(user_id) {
         .catch((err) => reject(err));
     })
 }
+
+module.exports.deletePost = function(user_id,postId) {
+    return new Promise((resolve, reject) => { 
+        foodPost.deleteOne({_id: postId, user_id: user_id})
+        .exec() 
+        .then(() => resolve(`Meal ${postId} has been deleted`))
+        .catch((error) => reject(error));
+    })
+}
