@@ -77,8 +77,9 @@ app.get("/api/macro", passport.authenticate('jwt', {session: false}), (req, res)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
-app.delete("/api/deletePost", passport.authenticate('jwt', {session: false}), (req, res) => {
-    dataService.deletePost(req.get('UserId'), req.body)
+app.delete("/api/deletePost/:postId", passport.authenticate('jwt', {session: false}), (req, res) => {
+    console.log('delete hits', req.params.postId);
+    dataService.deletePost(req.get('UserId'), req.params.postId)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
