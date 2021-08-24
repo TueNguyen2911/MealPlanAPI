@@ -1,3 +1,4 @@
+This is the api for MealPlanner Angular app: https://github.com/TueNguyen2911/MealPlanner2
 ## Uploading image to AWS S3 Bucket: 
 Packages require: 
 * multer 
