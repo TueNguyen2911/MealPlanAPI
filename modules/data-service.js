@@ -26,6 +26,76 @@ const macroSchema = new Schema({
     "user_id": String
 })
 let foodPost, macro; 
+const aws = require('aws-sdk');
+
+deleteNotNeedS3Objs = function () {
+    let bucketObjectKeys = [] 
+    let foodPostImg = [];
+    let difference = [];
+    var s3 = new aws.S3(); 
+    //getting objects from AWS S3
+    var params1 = {
+        Bucket: process.env.BUCKET_NAME.toString(), 
+        MaxKeys: 100
+       };
+    s3.listObjects(params1, function(err, data) {
+        if (err) 
+            console.log(err, err.stack); // an error occurred
+        else {      
+            data.Contents.forEach(elem => {
+                bucketObjectKeys.push(elem.Key);
+            })
+            //get all foodPosts
+            foodPost.find()
+            .exec()
+            .then((food_posts) => {
+                if(food_posts.length == 0)
+                    console.log("Unable to retrieve food posts")
+                else {
+                    food_posts.forEach(elem => {
+                        foodPostImg.push(elem.img.match(/([^\/]+).$/g)[0]);
+                    });
+                    //find the difference between bucket objects and documents in mongoDB
+                    bucketObjectKeys.map(x => {
+                        if(!foodPostImg.includes(x)) {
+                            let obj = {
+                                Key: x
+                            }
+                            difference.push(obj);
+                        }
+                    });
+                    //delete bucket Objects
+                    if(difference.length > 0) {
+                        var params2 = {
+                            Bucket: process.env.BUCKET_NAME.toString(), 
+                            Delete: {
+                                Objects: difference,
+                                Quiet: false
+                            }
+                        }; 
+                        s3.deleteObjects(params2, function(err, data) {
+                            if (err) {
+                                console.log(err, err.stack); // an error occurred
+                                console.log('err');
+                            }
+                            else {
+                                console.log(data);           // successful response
+                                console.log('success')
+                            }
+                        });
+
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log("Error in retrieving food posts: " + err);
+            })
+        }
+    });
+
+    
+    
+}
 module.exports.connect = function () {
     return new Promise(function (resolve, reject) {
         let db = mongoose.createConnection(mongoDBConnectionString, { useNewUrlParser: true});
@@ -37,6 +107,7 @@ module.exports.connect = function () {
         db.once('open', () => {
             foodPost = db.model("foodPosts", foodPostSchema, "foodPosts");
             macro = db.model("macros", macroSchema, "macros");
+            deleteNotNeedS3Objs();
             resolve();
         });
     });

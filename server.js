@@ -109,8 +109,10 @@ app.post('/api/login', (req,res) => {
 const uploadS3 = upload.any('photos', 1);
 app.post('/api/img-upload', passport.authenticate('jwt', {session: false}), function(req, res, next) {
     uploadS3(req, res, function(err) {
-        if(err)
+        if(err) {
+            console.log(err);
             return res.status(422).json({"error" : err.message});
+        }
         let filenames = req.files.map(file => {
             return file.location;
         })
