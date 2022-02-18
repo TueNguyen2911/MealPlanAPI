@@ -1,6 +1,7 @@
+require('dotenv').config();
 //link: https://aqueous-island-31888.herokuapp.com/
 const mongoDBConnectionString = "mongodb+srv://Tue:tuechinhlatue1@seor.lbc4a.mongodb.net/MealPlan?retryWrites=true&w=majority";
-const HTTP_PORT = process.env.PORT || 8080;
+const HTTP_PORT = process.env.PORT || 1107;
 
 const express = require("express");
 const bodyParser = require('body-parser');
