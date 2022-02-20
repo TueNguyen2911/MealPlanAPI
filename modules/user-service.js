@@ -55,19 +55,15 @@ module.exports.registerUser = function(userData) {
 }
 module.exports.checkUser = function(userData) {
     return new Promise((resolve, reject) => {
-        console.log("in");
         User.find({ username: userData.username })
             .limit(1)
             .exec()
             .then((users) => {
-                console.log(users);
                 if(users.length == 0) {
                     reject("Unable to find user " + userData.username);
                 } else {
                     bcrypt.compare(userData.password, users[0].password).then(res => {
-                        console.log(res);
                         if(res === true) {
-                            console.log("Correct login")
                             resolve(users[0]);
                         }
                         else 
@@ -81,12 +77,10 @@ module.exports.checkUser = function(userData) {
 }
 module.exports.userById = function(id) {
     return new Promise((resolve, reject) => {
-        console.log("here")
         User.find({_id: id})
         .limit(1)
         .exec()
         .then((users) => {
-            console.log("userByID" + users); 
             resolve(users[0]);
         })
         .catch((err) => {

@@ -22,7 +22,6 @@ var jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJWT.fromAuthHeaderWithScheme("jwt"); 
 jwtOptions.secretOrKey = process.env.JWT_SECRET; 
 const strategy = new JWTStrategy(jwtOptions, function (jwt_payload, next) {
-    console.log('pay load received', jwt_payload); 
     if(jwt_payload) {
         next(null, {
             _id: jwt_payload.id,
@@ -67,25 +66,21 @@ app.get("/api/food-in-plan", passport.authenticate('jwt', {session: false}), (re
     .catch((err) => res.json(err));
 })
 app.put("/api/update-macro", passport.authenticate('jwt', {session: false}), (req, res) => {
-    console.log('/api/update-macro hits', req.body)
     dataService.updateMacro(req.get('UserId'), req.body)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
 app.get("/api/macro", passport.authenticate('jwt', {session: false}), (req, res) => {
-    console.log('/api/macro hits')
     dataService.getMacroByUserId(req.get('UserId'))
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
 app.delete("/api/deletePost/:postId", passport.authenticate('jwt', {session: false}), (req, res) => {
-    console.log('delete hits', req.params.postId);
     dataService.deletePost(req.get('UserId'), req.params.postId)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 })
 app.post("/api/sign-up", (req, res) => {
-    console.log('hits')
     userService.registerUser(req.body)
     .then((msg) => {
         res.json({"message": msg });
@@ -111,14 +106,12 @@ const uploadS3 = upload.any('photos', 1);
 app.post('/api/img-upload', passport.authenticate('jwt', {session: false}), function(req, res, next) {
     uploadS3(req, res, function(err) {
         if(err) {
-            console.log(err);
+            console.error(err);
             return res.status(422).json({"error" : err.message});
         }
         let filenames = req.files.map(file => {
             return file.location;
         })
-        console.log(req.files);
-        console.log(filenames);
         return res.json(filenames);
     })
 }); 
@@ -138,11 +131,11 @@ userService.connect().then(()=>{
         app.listen(HTTP_PORT, ()=>{console.log("API listening on: " + HTTP_PORT)});
     })
     .catch((err) => {
-        console.log("unable to start the server from data: " + err);
+        console.error("unable to start the server from data: " + err);
     process.exit();
     })
 })
 .catch((err)=>{
-    console.log("unable to start the server: " + err);
+    console.error("unable to start the server: " + err);
     process.exit();
 });

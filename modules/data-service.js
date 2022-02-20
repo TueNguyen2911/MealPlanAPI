@@ -40,7 +40,7 @@ deleteNotNeedS3Objs = function () {
        };
     s3.listObjects(params1, function(err, data) {
         if (err) 
-            console.log(err, err.stack); // an error occurred
+            console.error(err, err.stack); // an error occurred
         else {      
             data.Contents.forEach(elem => {
                 bucketObjectKeys.push(elem.Key);
@@ -50,7 +50,7 @@ deleteNotNeedS3Objs = function () {
             .exec()
             .then((food_posts) => {
                 if(food_posts.length == 0)
-                    console.log("Unable to retrieve food posts")
+                    console.error("Unable to retrieve food posts")
                 else {
                     food_posts.forEach(elem => {
                         foodPostImg.push(elem.img.match(/([^\/]+).$/g)[0]);
@@ -75,12 +75,10 @@ deleteNotNeedS3Objs = function () {
                         }; 
                         s3.deleteObjects(params2, function(err, data) {
                             if (err) {
-                                console.log(err, err.stack); // an error occurred
-                                console.log('err');
+                                console.error(err, err.stack); // an error occurred
                             }
-                            else {
-                                console.log(data);           // successful response
-                                console.log('success')
+                            else {         
+                                console.log('uploaded image success') // successful response
                             }
                         });
 
@@ -88,7 +86,7 @@ deleteNotNeedS3Objs = function () {
                 }
             })
             .catch((err) => {
-                console.log("Error in retrieving food posts: " + err);
+                console.error("Error in retrieving food posts: " + err);
             })
         }
     });
@@ -117,8 +115,6 @@ module.exports.getFoodPosts = function(_id) {
         foodPost.find({user_id: _id})
         .exec()
         .then((food_posts) => {
-            console.log(_id);
-            console.log(food_posts.length)
             if(food_posts.length == 0)
                 reject("Unable to retrieve food posts")
             else {
@@ -144,7 +140,6 @@ module.exports.getFoodInPlan = function(user_id) {
 }
 module.exports.addFoodPost = function(formData) {
     return new Promise(function(resolve, reject) {
-        console.log(formData);
         let aFoodPost = new foodPost({
             "title": formData.title, 
             "shortDesc": formData.shortDesc, 
@@ -177,7 +172,6 @@ module.exports.getFoodPostById = function(id) {
     })
 }
 module.exports.updateInPlan = function(user_id, food_id, in_plan) {
-    console.log(user_id, food_id, in_plan)
     return new Promise((resolve, reject) => { 
         foodPost.updateOne(
             {user_id: user_id, _id: food_id},
@@ -187,7 +181,6 @@ module.exports.updateInPlan = function(user_id, food_id, in_plan) {
     })
 }
 module.exports.updateMacro = function(user_id, p_macro) {
-    console.log(user_id, p_macro); 
     return new Promise((resolve, reject) => {
         macro.findOne({user_id: user_id})
         .then((data) => {
@@ -220,7 +213,6 @@ module.exports.updateMacro = function(user_id, p_macro) {
     })
 }
 module.exports.getMacroByUserId = function(user_id) {
-    console.log(user_id); 
     return new Promise((resolve, reject) => {
         macro.findOne({user_id: user_id})
         .exec()
